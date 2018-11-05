@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -13,6 +14,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -26,6 +28,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.zac.batch.BatchConstants;
 import com.zac.batch.dto.StressTestingDto;
 import com.zac.batch.entity.StressTesting;
+import com.zac.batch.task.FirstTasklet;
+import com.zac.batch.task.NextTasklet;
 
 @Configuration
 @EnableBatchProcessing
@@ -64,12 +68,16 @@ public class StressTestingJobConfiguration {
 
 	// TODO
 	@Bean
-	public Job stressTestingJob(@Qualifier("stressTestingStep") Step stressTestingStep) throws Exception {
+	public Job stressTestingJob(Step taskletFirstStep, Step taskletNextStep, @Qualifier("stressTestingStep") Step stressTestingStep) throws Exception {
 		return jobBuilderFactory.get(BatchConstants.STRESS_TESTING_JOB_ID)
 				.repository(jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.listener(listener)
-				.flow(stressTestingStep)
+				.flow(taskletFirstStep)
+				.on(ExitStatus.COMPLETED.getExitCode())
+				.to(stressTestingStep)
+				.on(ExitStatus.COMPLETED.getExitCode())
+				.to(taskletNextStep)
 				.end()
 				.build();
 	}
@@ -84,5 +92,40 @@ public class StressTestingJobConfiguration {
 				.writer(writer)
 				.build();
 	}
+	
+	@Bean
+    protected Step taskletFirstStep() {
+        return stepBuilderFactory.get("firstStep")
+                .tasklet(firstTasklet()) // 上のTaskletをステップに登録
+                .build();
+    }
+
+    @Bean
+    protected  Step taskletNextStep() {
+        return stepBuilderFactory.get("nextStep")
+                .tasklet(nextTasklet())
+                .build();
+    }
+    
+	/**
+     * Taskletの定義.
+     *
+     * @return FirstTasklet
+     */
+    @Bean
+    public Tasklet firstTasklet() {
+        return new FirstTasklet();
+    }
+
+
+    /**
+     * 後続Taskletの定義
+     *
+     * @return NextTasklet
+     */
+    @Bean
+    public Tasklet nextTasklet() {
+        return new NextTasklet();
+    }
 
 }

@@ -99,8 +99,13 @@ public class FirstJobConfiguration {
 	    Flow flow1 = new FlowBuilder<SimpleFlow>("flow1").start(taskletFirstStep).next(taskletNextStep).build();
 	    
 	    //　並行処理のfirstStep、masterStepをflow2に登録
-	    Flow flow2 = new FlowBuilder<SimpleFlow>("flow2").start(new FlowBuilder<Flow>("masterStep").from(masterStep).on(ExitStatus.COMPLETED.getExitCode()).to(step1).end())
-	            .split(new SimpleAsyncTaskExecutor()).add(new FlowBuilder<Flow>("firstStep").from(firstStep).end()).build();
+	    Flow flow2 = new FlowBuilder<SimpleFlow>("flow2")
+	    		.start(new FlowBuilder<Flow>("masterStep")
+	    		.from(masterStep)
+	    		.on(ExitStatus.COMPLETED.getExitCode()).to(step1).end())
+	            .split(new SimpleAsyncTaskExecutor())
+	            .add(new FlowBuilder<Flow>("firstStep").from(firstStep).end())
+	            .build();
 	    
 		return jobBuilderFactory.get(BatchConstants.FIRST_JOB_ID)
 				.repository(jobRepository)

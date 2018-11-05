@@ -1,7 +1,13 @@
 package com.zac.batch.dto;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Range;
+
 public class StressTestingDto {
 
+	@NotNull
+	@Range(min = 1, max = 10)
     private Integer testId;
     private String testPoint;
     private String testDate;

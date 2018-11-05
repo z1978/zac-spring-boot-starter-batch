@@ -38,6 +38,11 @@ public class FirstTasklet implements Tasklet {
                                                 .getExecutionContext();
         // ステップ間の情報引き継ぎはJobExecutionのExecutionContextを取得する。（StepExecutionのExecutionContextではダメ）
         executionContext.put("message", "foobar");
+        int num = 0;
+        if(num == 0) {
+        	// TODO for test
+//            throw new IllegalArgumentException("引数の値が不正です");         	
+        }
         return RepeatStatus.FINISHED; // このステップはこれで終了
     }
 }
