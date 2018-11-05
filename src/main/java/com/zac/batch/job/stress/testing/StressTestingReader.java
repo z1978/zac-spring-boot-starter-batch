@@ -27,7 +27,10 @@ public class StressTestingReader extends FlatFileItemReader<StressTestingDto> im
 
 	public StressTestingReader() {
 		super();
-
+		
+		// Number of lines to ignore at the top of the file.
+		this.setLinesToSkip(1);
+		
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
 		lineTokenizer.setNames(new String[] { "testId", "testPoint", "testDate" });
 
