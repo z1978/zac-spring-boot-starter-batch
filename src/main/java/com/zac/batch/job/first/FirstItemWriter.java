@@ -26,11 +26,11 @@ public class FirstItemWriter implements ItemWriter<Person> {
 	private PersonRepository personRepository;
 
 	public void write(List<? extends Person> items) throws Exception {
-
+		personService.findOne();
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Writing to JPA with {} items.", items.size());
 		}
-        Person person3 = this.personRepository.save(new Person("user3", "female"));
+        Person person3 = personRepository.save(new Person("user3", "female"));
 
 		/* 登録情報の確認 */
         System.out.println("DB登録結果確認");
@@ -39,7 +39,7 @@ public class FirstItemWriter implements ItemWriter<Person> {
 
         /* 登録情報の変更 */
         person3.setFirstName("CCC");
-        this.personRepository.save(person3);
+        personRepository.save(person3);
         /* 登録情報変更の確認 */
         System.out.println("DB登録変更結果確認");
         personRepository.findAll().forEach(p -> System.out.println(p.toString()));
@@ -49,8 +49,8 @@ public class FirstItemWriter implements ItemWriter<Person> {
 			List<Person> itemList = new ArrayList<>();
 			Person person = new Person();
 			person.setPersonId(991);
-			person.setFirstName("TTT");
-			person.setLastName("GGG");
+			person.setFirstName("XXX");
+			person.setLastName("VVV");
 			itemList.add(person);
 			
 			List<Person> list = this.personService.getAll();
@@ -63,8 +63,8 @@ public class FirstItemWriter implements ItemWriter<Person> {
 				System.out.println(item.getLastName());
 			}
 //			personRepository.deleteAll();
-			this.personRepository.save(person);
-			this.personRepository.saveAll(itemList);
+			personRepository.save(person);
+			personRepository.saveAll(itemList);
 			System.out.println("==========");
 		}
 	}

@@ -1,7 +1,10 @@
 package com.zac.batch.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +13,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.zac.batch.entity.Person;
 import com.zac.batch.repository.PersonRepository;
+import javax.persistence.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Service
 public class PersonService {
 	final static Logger LOGGER = LoggerFactory.getLogger(PersonService.class);
 
+	@PersistenceContext
+	protected EntityManager em;
+
 	@Autowired
 	private PersonRepository personRepository;
+
+	public void findOne() {
+		String sql;
+		try {
+			sql = IOUtils.toString(
+			        this.getClass().getClassLoader().getResourceAsStream("sql/find.sql"));
+			System.out.println(sql);
+			Query query = em.createNativeQuery(sql);
+			List<Object[]> rows = query.getResultList();
+			for (Object[] row : rows){
+				System.out.println(row[0]);
+				System.out.println(row[1]);
+				System.out.println(row[2]);
+				System.out.println("=====");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		    
+	}
 
 	public Person findById(int id) {
 		return personRepository.findById(id);
