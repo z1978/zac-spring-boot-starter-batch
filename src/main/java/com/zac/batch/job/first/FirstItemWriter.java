@@ -1,5 +1,6 @@
 package com.zac.batch.job.first;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -29,19 +30,41 @@ public class FirstItemWriter implements ItemWriter<Person> {
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info("Writing to JPA with {} items.", items.size());
 		}
+        Person person3 = this.personRepository.save(new Person("user3", "female"));
 
+		/* 登録情報の確認 */
+        System.out.println("DB登録結果確認");
+        personRepository.findAll().forEach(p -> System.out.println(p.toString()));
+
+
+        /* 登録情報の変更 */
+        person3.setFirstName("CCC");
+        this.personRepository.save(person3);
+        /* 登録情報変更の確認 */
+        System.out.println("DB登録変更結果確認");
+        personRepository.findAll().forEach(p -> System.out.println(p.toString()));
+        List<Person> testList = personRepository.findByFirstName("CCC");
+        System.out.println(testList.size());
 		if (!items.isEmpty()) {
-			personRepository.deleteAll();
-			personRepository.saveAll(items);
+			List<Person> itemList = new ArrayList<>();
+			Person person = new Person();
+			person.setPersonId(991);
+			person.setFirstName("TTT");
+			person.setLastName("GGG");
+			itemList.add(person);
 			
 			List<Person> list = this.personService.getAll();
 			System.out.println(list.size());
 			System.out.println("==========");			
 			for (Person item : list) {
-				System.out.println(item.getId());
+				itemList.add(item);
+				System.out.println(item.getPersonId());
 				System.out.println(item.getFirstName());
 				System.out.println(item.getLastName());
 			}
+//			personRepository.deleteAll();
+			this.personRepository.save(person);
+			this.personRepository.saveAll(itemList);
 			System.out.println("==========");
 		}
 	}

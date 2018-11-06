@@ -9,18 +9,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
-@Table(name="person")
+@Table(name = "person")
 public class Person implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
-	private Integer id;
-	
+	@Column(name = "person_id")
+	private Integer personId;
+
 	@Column(name = "first_name")
 	private String firstName;
 
@@ -35,16 +34,18 @@ public class Person implements Serializable {
 		this.lastName = lastName;
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getPersonId() {
+		return personId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+
+	public void setPersonId(Integer personId) {
+		this.personId = personId;
 	}
 
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
@@ -52,8 +53,13 @@ public class Person implements Serializable {
 	public String getLastName() {
 		return lastName;
 	}
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

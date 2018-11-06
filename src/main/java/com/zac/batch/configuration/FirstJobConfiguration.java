@@ -111,8 +111,8 @@ public class FirstJobConfiguration {
 				.repository(jobRepository)
 				.incrementer(new RunIdIncrementer())
 				.listener(jobListener)
-				.start(flow1)
-                .next(flow2)
+				.start(firstStep)
+//                .next(flow1)
 //				.listener(jobListener)
 //				.start(taskletFirstStep)
 //				.next(taskletNextStep)
@@ -122,7 +122,7 @@ public class FirstJobConfiguration {
 //				.from(masterStep)
 //				.on(ExitStatus.FAILED.getExitCode())
 //				.to(step2)
-				.end()
+//				.end()
 				.build();
 	}
 
