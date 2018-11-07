@@ -2,6 +2,7 @@ package com.zac.batch.job.first;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,31 +37,34 @@ public class FirstJobExecutionListener extends JobExecutionListenerSupport {
 	public void afterJob(JobExecution jobExecution) {
 		ExecutionContext ec = jobExecution.getExecutionContext();
 		System.out.println(ec.get("message"));
-		
+
 		String jobName = jobExecution.getJobInstance().getJobName();
 		Date jobStartTime = jobExecution.getStartTime();
 		Date jobEndTime = jobExecution.getEndTime();
 		BatchStatus jobBatchStatus = jobExecution.getStatus();
 		String jobExitCode = jobExecution.getExitStatus().getExitCode();
 		// 日付をlong値に変換します。
-	    long dateTimeTo = jobEndTime.getTime();
-	    long dateTimeFrom = jobStartTime.getTime();
-	 
-	    // 差分の日数を算出します。
-	    long dayDiff = dateTimeTo - dateTimeFrom;//(1000 * 60 * 60 * 24 );
-	    System.out.println("Program running time = [" + dayDiff / 1000f + "]s");
-	    LOGGER.info("Program running time = [" + dayDiff / 1000f + "]s");
+		long dateTimeTo = jobEndTime.getTime();
+		long dateTimeFrom = jobStartTime.getTime();
 
-	    System.out.println(jobExecution.getStepExecutions().size());
+		// 差分の日数を算出します。
+		long dayDiff = dateTimeTo - dateTimeFrom;// (1000 * 60 * 60 * 24 );
+		System.out.println("Program running time = [" + dayDiff / 1000f + "]s");
+		LOGGER.info("Program running time = [" + dayDiff / 1000f + "]s");
+
+		System.out.println(jobExecution.getStepExecutions().size());
 		jobExecution.getStepExecutions().forEach(s -> {
+			System.out.println(s.getStepName() + " " + s.getReadCount() + " " + s.getFilterCount() + " "
+					+ s.getWriteCount() + " " + s.getCommitCount());
+
 			String stepName = s.getStepName();
 			System.out.println(stepName);
 			Date stepStartTime = s.getStartTime();
 			System.out.println(stepStartTime);
 			Date stepEndTime = s.getEndTime();
 			System.out.println(stepEndTime);
-			long stepTimeDiff = stepEndTime.getTime() - stepStartTime.getTime();//(1000 * 60 * 60 * 24 );
-		    System.out.println("Step running time = [" + stepTimeDiff / 1000f + "]s");
+			long stepTimeDiff = stepEndTime.getTime() - stepStartTime.getTime();// (1000 * 60 * 60 * 24 );
+			System.out.println("Step running time = [" + stepTimeDiff / 1000f + "]s");
 			BatchStatus stepStatus = s.getStatus();
 			System.out.println(stepStatus);
 			String stepExitCode = s.getExitStatus().getExitCode();
@@ -89,6 +94,19 @@ public class FirstJobExecutionListener extends JobExecutionListenerSupport {
 					LOGGER.info("{}/{}: Found <{}> in the database.", index, nbResults, person);
 				}
 			}
+		} else {
+			System.out.println(jobExecution.getStepExecutions().size());
+			jobExecution.getStepExecutions().forEach(stepExecution -> {
+				System.out.println(stepExecution.getStepName() + " " + stepExecution.getReadCount() + " " + stepExecution.getFilterCount() + " "
+						+ stepExecution.getWriteCount() + " " + stepExecution.getCommitCount());
+
+	            Object errorItem = stepExecution.getExecutionContext().get("ERROR_ITEM");
+	            if (errorItem != null) {
+	                LOGGER.error("detected error on this item processing. " +
+	                        "[step:{}] [item:{}]", stepExecution.getStepName(),
+	                        errorItem);
+	            }
+	        });
 		}
 	}
 }

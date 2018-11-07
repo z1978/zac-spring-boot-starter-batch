@@ -27,7 +27,9 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 
 	public FirstItemReader() {
 		super();
-
+		
+		setLinesToSkip(1);
+		
 		DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
 		lineTokenizer.setNames(new String[] { "firstName", "lastName" });
 
