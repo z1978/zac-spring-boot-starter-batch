@@ -6,6 +6,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
@@ -45,7 +46,11 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
-
+		// JobのExecutionContextによるStep間の引き継ぎ
+		ExecutionContext ctx = stepExecution.getJobExecution().getExecutionContext();
+        LOGGER.info("I am NEXT TASKLET! execution context set by previous step context is {}", ctx.get("message")); // 前Stepからの引き継ぎ
+        System.out.println(ctx.get("message"));
+        
 		JobParameters jobParameters = stepExecution.getJobParameters();
 		String filePath = jobParameters.getString("filePath");
 		LOGGER.info("filePath = [{}].", filePath);
