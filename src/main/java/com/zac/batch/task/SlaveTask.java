@@ -13,13 +13,12 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.zac.batch.ZacApplication;
 import com.zac.batch.entity.Person;
 import com.zac.batch.repository.PersonRepository;
 
 @Component
 public class SlaveTask implements Tasklet {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ZacApplication.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SlaveTask.class);
 
 	@Autowired
 	private PersonRepository personRepository;
