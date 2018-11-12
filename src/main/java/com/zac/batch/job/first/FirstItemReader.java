@@ -1,5 +1,7 @@
 package com.zac.batch.job.first;
 
+import java.net.URL;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
@@ -55,9 +57,11 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 		String filePath = jobParameters.getString("filePath");
 		LOGGER.info("filePath = [{}].", filePath);
 
-		// TODO 
+		// TODO
+		URL url = getClass().getClassLoader().getResource("input/sample-data.csv");
+		System.out.println(url.getPath().toString());
+		FileSystemResource resource = new FileSystemResource(url.getPath().toString());
 //		FileSystemResource resource = new FileSystemResource(filePath);
-		FileSystemResource resource = new FileSystemResource(filePath);
 		setResource(resource);
 	}
 
