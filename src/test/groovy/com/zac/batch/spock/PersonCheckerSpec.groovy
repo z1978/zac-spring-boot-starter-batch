@@ -196,6 +196,7 @@ class PersonCheckerSpec extends Specification {
 		// IllegalArgumentExceptionがスローされるはず
 		def ex = thrown(IllegalArgumentException)
 		// Exceptionのメッセージは「null is not acceptable.」のはず
-		ex.getMessage() == "null is not acceptable."
+//		ex.getMessage() == "null is not acceptable."
+		ex.getMessage() == "nullは許可されていません"
 	}
 }
