@@ -75,3 +75,4 @@ task writeNewPom << {
 ```
 gradle writeNewPom
 ```
+
