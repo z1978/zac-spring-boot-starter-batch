@@ -4,50 +4,29 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 
+import lombok.Data;
+
+@Data
 public class StressTestingDto {
 
 	@NotNull
 	@Range(min = 1, max = 10)
-    private Integer testId;
-    private String testPoint;
-    private String testDate;
+	private Integer testId;
+	private String testPoint;
+	private String testDate;
 
-    public StressTestingDto() {
-    }
+	public StressTestingDto() {
+	}
 
-    public StressTestingDto(Integer testId, String testPoint, String testDate) {
-        this.testId = testId;
-        this.testPoint = testPoint;
-        this.testDate = testDate;
-    }
+	public StressTestingDto(Integer testId, String testPoint, String testDate) {
+		this.testId = testId;
+		this.testPoint = testPoint;
+		this.testDate = testDate;
+	}
 
-    public Integer getTestId() {
-      return testId;
-    }
-
-    public void setTestId(Integer testId) {
-      this.testId = testId;
-    }
-
-    public String getTestPoint() {
-      return testPoint;
-    }
-
-    public void setTestPoint(String testPoint) {
-      this.testPoint = testPoint;
-    }
-
-    public String getTestDate() {
-      return testDate;
-    }
-
-    public void setTestDate(String testDate) {
-      this.testDate = testDate;
-    }
-
-    @Override
-    public String toString() {
-        return "testId: " + testId + ", testPoint: " + testPoint + ", testDate: " + testDate;
-    }
+	@Override
+	public String toString() {
+		return "testId: " + testId + ", testPoint: " + testPoint + ", testDate: " + testDate;
+	}
 
 }
