@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<property name="APPLI_NAME" value="sample-spring-boot-batch" />
+	<property name="APPLI_NAME" value="zac-spring-boot-starter-batch" />
 	<property name="LOGS_FOLDER" value="./logs" />
 	<property name="LOGS_TO_COLLECT_FOLDER" value="./logs-archives" />
 
@@ -42,7 +42,7 @@
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</logger>
-	<logger name="net.ldauvilaire.sample" level="DEBUG" additivity="false">
+	<logger name="com.zac.batch" level="DEBUG" additivity="false">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="STDOUT" />
 	</logger>

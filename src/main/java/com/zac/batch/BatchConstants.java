@@ -21,5 +21,8 @@ public final class BatchConstants {
   public static final String STRESS_TESTING_JOB_ITEM_PROCESSOR_ID = "stressTestingItemProcessor";
   public static final String STRESS_TESTING_JOB_ITEM_WRITER_ID = "stressTestingItemWriter";
   public static final String STRESS_TESTING_JOB_EXECUTION_LISTENER_ID = "stressTestingJobExecutionListener";
+  
+  public static final String ZAC_JOB_ID = "zacJob";
+
 
 }

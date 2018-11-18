@@ -98,7 +98,7 @@ public class ZacApplicationRunner {
 				JobLauncher jobLauncher = (JobLauncher) context.getBean(JobLauncher.class);
 
 				if (jobName.equals(BatchConstants.FIRST_JOB_ID)
-						|| jobName.equals(BatchConstants.STRESS_TESTING_JOB_ID)) {
+						|| jobName.equals(BatchConstants.STRESS_TESTING_JOB_ID) || jobName.equals(BatchConstants.ZAC_JOB_ID)) {
 					System.out.println("Job name is ok.");
 				} else {
 					System.out.println("########## Parameter ERROR !!!!!");
