@@ -2,6 +2,7 @@ package com.zac.batch.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -22,9 +23,12 @@ public class Task1 implements Tasklet {
 		if (isCheckOK()) {
 			// 成功
 			contribution.setExitStatus(ExitStatus.COMPLETED);
+//			chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.COMPLETED);
+//			return RepeatStatus.CONTINUABLE;
 		} else {
 			// 失敗
 			contribution.setExitStatus(ExitStatus.FAILED);
+			chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
 		}
 
 		LOGGER.debug("----------" + className + " = FINISHED");
