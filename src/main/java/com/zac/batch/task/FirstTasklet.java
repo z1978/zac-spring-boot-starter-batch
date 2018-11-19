@@ -15,34 +15,31 @@ import java.util.Map;
  */
 public class FirstTasklet implements Tasklet {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FirstTasklet.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(FirstTasklet.class);
 
-    /**
-     * Taskletのエントリポイント
-     *
-     * @param contribution ステップの実行状態
-     * @param chunkContext チャンクの実行状態
-     * @return ステータス(終了)
-     * @throws Exception 予期しない例外
-     */
-    @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        Map<String, Object> jobParameters = chunkContext.getStepContext().getJobParameters();
+	/**
+	 * Taskletのエントリポイント
+	 *
+	 * @param contribution ステップの実行状態
+	 * @param chunkContext チャンクの実行状態
+	 * @return ステータス(終了)
+	 * @throws Exception 予期しない例外
+	 */
+	@Override
+	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+		Map<String, Object> jobParameters = chunkContext.getStepContext().getJobParameters();
 
-        // ジョブ起動パラメータの取得
-        LOGGER.info("FirstTasklet has been executed. job param is {}", jobParameters);
+		// ジョブ起動パラメータの取得
+		LOGGER.info("FirstTasklet has been executed. job param is {}", jobParameters);
 
-        ExecutionContext executionContext = chunkContext.getStepContext()
-                                                .getStepExecution()
-                                                .getJobExecution()
-                                                .getExecutionContext();
-        // ステップ間の情報引き継ぎはJobExecutionのExecutionContextを取得する。（StepExecutionのExecutionContextではダメ）
-        executionContext.put("message", "foobar");
-        int num = 0;
-        if(num == 0) {
-        	// TODO for test
+		ExecutionContext ec = chunkContext.getStepContext().getStepExecution().getJobExecution().getExecutionContext();
+		// ステップ間の情報引き継ぎはJobExecutionのExecutionContextを取得する。（StepExecutionのExecutionContextではダメ）
+		ec.put("message", "foobar");
+		int num = 0;
+		if (num == 0) {
+			// TODO for test
 //            throw new IllegalArgumentException("引数の値が不正です");         	
-        }
-        return RepeatStatus.FINISHED; // このステップはこれで終了
-    }
+		}
+		return RepeatStatus.FINISHED; // このステップはこれで終了
+	}
 }
