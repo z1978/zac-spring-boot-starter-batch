@@ -9,8 +9,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
-import com.zac.batch.util.ZacUtil;
-
 @Component
 public class Task2 implements Tasklet {
 

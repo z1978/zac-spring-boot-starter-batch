@@ -10,8 +10,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
-import com.zac.batch.util.ZacUtil;
-
 @Component
 public class Task1 implements Tasklet {
 	final String className = new Object(){}.getClass().getEnclosingClass().getName();
@@ -28,7 +26,7 @@ public class Task1 implements Tasklet {
 		} else {
 			// 失敗
 			contribution.setExitStatus(ExitStatus.FAILED);
-			chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
+//			chunkContext.getStepContext().getStepExecution().setStatus(BatchStatus.FAILED);
 		}
 
 		LOGGER.debug("----------" + className + " = FINISHED");

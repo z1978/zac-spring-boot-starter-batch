@@ -49,9 +49,9 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 	@Override
 	public void beforeStep(StepExecution stepExecution) {
 		// JobのExecutionContextによるStep間の引き継ぎ
-		ExecutionContext ctx = stepExecution.getJobExecution().getExecutionContext();
-        LOGGER.info("I am NEXT TASKLET! execution context set by previous step context is {}", ctx.get("message")); // 前Stepからの引き継ぎ
-        System.out.println(ctx.get("message"));
+		ExecutionContext ec = stepExecution.getJobExecution().getExecutionContext();
+        LOGGER.info("I am NEXT TASKLET! execution context set by previous step context is {}", ec.get("message")); // 前Stepからの引き継ぎ
+        System.out.println(ec.get("message"));
         
 		JobParameters jobParameters = stepExecution.getJobParameters();
 		String filePath = jobParameters.getString("filePath");
@@ -67,6 +67,11 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
-		return null;
+		ExecutionContext ec = stepExecution.getJobExecution().getExecutionContext();
+
+		if (ec.get("errormessage") != null) {
+			return ExitStatus.FAILED;
+		}
+		return ExitStatus.COMPLETED;
 	}
 }
