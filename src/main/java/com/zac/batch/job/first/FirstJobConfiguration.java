@@ -1,4 +1,4 @@
-package com.zac.batch.configuration;
+package com.zac.batch.job.first;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -89,6 +89,12 @@ public class FirstJobConfiguration {
 	
     @Autowired
     private StepBuilderFactory stepBuilders;
+    
+	@Bean
+	public FirstDecider decider() {
+		FirstDecider decider = new FirstDecider();
+		return decider;
+	}
 
 	// TODO
 	@Bean
@@ -96,7 +102,12 @@ public class FirstJobConfiguration {
 			throws Exception {
 	    
 	    //　taskletFirstStepをflow1に登録
-	    Flow flow1 = new FlowBuilder<SimpleFlow>("flow1").start(taskletFirstStep).next(taskletNextStep).build();
+	    Flow flow1 = new FlowBuilder<SimpleFlow>("flow1")
+	    		.start(taskletFirstStep)
+	    		.next(taskletNextStep)
+	    		.next(decider()).on(BatchConstants.DECIDER_CONTINUE).to(taskletFirstStep)
+	    		.from(decider()).on(BatchConstants.DECIDER_COMPLETED).end()
+	    		.build();
 	    
 	    //　並行処理のfirstStep、masterStepをflow2に登録
 	    Flow flow2 = new FlowBuilder<SimpleFlow>("flow2")

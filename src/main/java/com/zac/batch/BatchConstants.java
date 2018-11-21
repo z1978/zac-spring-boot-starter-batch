@@ -24,5 +24,8 @@ public final class BatchConstants {
   
   public static final String ZAC_JOB_ID = "zacJob";
 
+  public static final String DECIDER_COMPLETED = "COMPLETED";
+  public static final String DECIDER_CONTINUE = "CONTINUE";  
 
+  
 }
