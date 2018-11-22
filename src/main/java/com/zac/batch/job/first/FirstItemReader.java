@@ -1,6 +1,7 @@
 package com.zac.batch.job.first;
 
 import java.net.URL;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,10 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
+		List<Throwable> exceptionList = stepExecution.getFailureExceptions();
+		for (Throwable throwable : exceptionList) {
+			System.out.println(throwable);
+		}
 		ExecutionContext ec = stepExecution.getJobExecution().getExecutionContext();
 
 		if (ec.get("errormessage") != null) {
