@@ -23,6 +23,8 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.repeat.RepeatContext;
+import org.springframework.batch.repeat.exception.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,10 +88,10 @@ public class FirstJobConfiguration {
 
 	@Autowired
 	private SlaveTask slaveTask;
-	
-    @Autowired
-    private StepBuilderFactory stepBuilders;
-    
+
+	@Autowired
+	private StepBuilderFactory stepBuilders;
+
 	@Bean
 	public FirstDecider decider() {
 		FirstDecider decider = new FirstDecider();
@@ -98,33 +100,27 @@ public class FirstJobConfiguration {
 
 	// TODO
 	@Bean
-	public Job firstJob(Step taskletFirstStep, Step taskletNextStep, @Qualifier("firstStep") Step firstStep, Step masterStep, Step step1, Step step2)
-			throws Exception {
-	    
-	    //　taskletFirstStepをflow1に登録
-	    Flow flow1 = new FlowBuilder<SimpleFlow>("flow1")
-	    		.start(taskletFirstStep)
-	    		.next(taskletNextStep)
-	    		.next(decider()).on(BatchConstants.DECIDER_CONTINUE).to(taskletFirstStep)
-	    		.from(decider()).on(BatchConstants.DECIDER_COMPLETED).end()
-	    		.build();
-	    
-	    //　並行処理のfirstStep、masterStepをflow2に登録
-	    Flow flow2 = new FlowBuilder<SimpleFlow>("flow2")
-	    		.start(new FlowBuilder<Flow>("masterStep")
-	    		.from(masterStep)
-	    		.on(ExitStatus.COMPLETED.getExitCode()).to(step1).end())
-	            .split(new SimpleAsyncTaskExecutor())
-	            .add(new FlowBuilder<Flow>("firstStep").from(firstStep).end())
-	            .build();
-	    
-		return jobBuilderFactory.get(BatchConstants.FIRST_JOB_ID)
-				.repository(jobRepository)
-				.incrementer(new RunIdIncrementer())
-				.listener(jobListener)
-				.start(taskletFirstStep)
-				.next(taskletNextStep)
-				.next(firstStep)
+	public Job firstJob(Step taskletFirstStep, Step taskletNextStep, @Qualifier("firstStep") Step firstStep,
+			Step masterStep, Step step1, Step step2) throws Exception {
+
+		// taskletFirstStepをflow1に登録
+		Flow flow1 = new FlowBuilder<SimpleFlow>("flow1").start(taskletFirstStep).next(taskletNextStep).next(decider())
+				.on(BatchConstants.DECIDER_CONTINUE).to(taskletFirstStep).from(decider())
+				.on(BatchConstants.DECIDER_COMPLETED).end().build();
+
+		// 並行処理のfirstStep、masterStepをflow2に登録
+		Flow flow2 = new FlowBuilder<SimpleFlow>("flow2")
+				.start(new FlowBuilder<Flow>("masterStep").from(masterStep).on(ExitStatus.COMPLETED.getExitCode())
+						.to(step1).end())
+				.split(new SimpleAsyncTaskExecutor()).add(new FlowBuilder<Flow>("firstStep").from(firstStep).end())
+				.build();
+
+		return jobBuilderFactory.get(BatchConstants.FIRST_JOB_ID).repository(jobRepository)
+				.incrementer(new RunIdIncrementer()).listener(jobListener)
+				.start(firstStep)
+//				.start(taskletFirstStep).next(taskletNextStep)
+//				.next(firstStep)
+				
 //                .next(flow1)
 //				.listener(jobListener)
 //				.start(taskletFirstStep)
@@ -144,48 +140,33 @@ public class FirstJobConfiguration {
 		return stepBuilderFactory.get(BatchConstants.FIRST_JOB_STEP_ID)
 //				.partitioner(slaveStep().getName(), demoPartitioner)
 //				.partitionHandler(handler())
-				.repository(jobRepository)
-				.<PersonDto, Person>chunk(chunckSize)
-				.reader(reader)
-				.processor(processor)
-				.writer(writer)
+				.repository(jobRepository).<PersonDto, Person>chunk(chunckSize).reader(reader).processor(processor)
+				.writer(writer).exceptionHandler(exceptionHandler())
 				.build();
 	}
 
 	@Bean
 	public Step step1() {
 		LOGGER.info("step1");
-		return stepBuilderFactory
-				.get("step1")
-				.tasklet(task1)
-				.build();
+		return stepBuilderFactory.get("step1").tasklet(task1).build();
 	}
 
 	@Bean
 	public Step step2() {
 		LOGGER.info("step2");
-		return stepBuilderFactory
-				.get("step2")
-				.tasklet(task2)
-				.build();
+		return stepBuilderFactory.get("step2").tasklet(task2).build();
 	}
 
 	@Bean
 	public Step slaveStep() {
-		return stepBuilderFactory
-				.get("slaveStep")
-				.tasklet(slaveTask)
-				.build();
+		return stepBuilderFactory.get("slaveStep").tasklet(slaveTask).build();
 	}
 
 	@Bean
 	public Step masterStep() {
 		// masterにslave、handler、partitionerを設定
-		return stepBuilderFactory
-				.get("masterStep")
-				.partitioner(slaveStep().getName(), demoPartitioner)
-				.partitionHandler(handler())
-				.build();
+		return stepBuilderFactory.get("masterStep").partitioner(slaveStep().getName(), demoPartitioner)
+				.partitionHandler(handler()).build();
 	}
 
 	@Bean
@@ -206,45 +187,54 @@ public class FirstJobConfiguration {
 	public SimpleAsyncTaskExecutor taskExecutor() {
 		return new SimpleAsyncTaskExecutor();
 	}
-	
+
 	/**
-     * Taskletの定義.
-     *
-     * @return FirstTasklet
-     */
-    @Bean
-    public Tasklet firstTasklet() {
-        return new FirstTasklet();
-    }
+	 * Taskletの定義.
+	 *
+	 * @return FirstTasklet
+	 */
+	@Bean
+	public Tasklet firstTasklet() {
+		return new FirstTasklet();
+	}
 
+	/**
+	 * 後続Taskletの定義
+	 *
+	 * @return NextTasklet
+	 */
+	@Bean
+	public Tasklet nextTasklet() {
+		return new NextTasklet();
+	}
 
-    /**
-     * 後続Taskletの定義
-     *
-     * @return NextTasklet
-     */
-    @Bean
-    public Tasklet nextTasklet() {
-        return new NextTasklet();
-    }
+	/**
+	 * ジョブステップの定義.
+	 *
+	 * @return firstStep
+	 */
+	@Bean
+	protected Step taskletFirstStep() {
+		return stepBuilders.get("firstStep").tasklet(firstTasklet()) // 上のTaskletをステップに登録
+				.build();
+	}
 
-    /**
-     * ジョブステップの定義.
-     *
-     * @return firstStep
-     */
-    @Bean
-    protected Step taskletFirstStep() {
-        return stepBuilders.get("firstStep")
-                .tasklet(firstTasklet()) // 上のTaskletをステップに登録
-                .build();
-    }
+	@Bean
+	protected Step taskletNextStep() {
+		return stepBuilders.get("nextStep").tasklet(nextTasklet()).build();
+	}
 
-    @Bean
-    protected  Step taskletNextStep() {
-        return stepBuilders.get("nextStep")
-                .tasklet(nextTasklet())
-                .build();
-    }
+	private ExceptionHandler exceptionHandler() {
+		return new ExceptionHandler() {
+
+			@Override
+			public void handleException(RepeatContext context, Throwable throwable) throws Throwable {
+				System.out.println(throwable.getMessage());
+				// 例外を投げず、終了する
+				context.setTerminateOnly();
+			}
+		};
+
+	}
 
 }
