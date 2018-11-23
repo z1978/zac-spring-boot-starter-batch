@@ -68,6 +68,9 @@ public class FirstItemReader extends FlatFileItemReader<PersonDto> implements St
 
 	@Override
 	public ExitStatus afterStep(StepExecution stepExecution) {
+		
+		System.out.println(FirstError.firstStepError);
+		
 		List<Throwable> exceptionList = stepExecution.getFailureExceptions();
 		for (Throwable throwable : exceptionList) {
 			System.out.println(throwable);

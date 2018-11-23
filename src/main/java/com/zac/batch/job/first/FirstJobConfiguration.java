@@ -141,7 +141,8 @@ public class FirstJobConfiguration {
 //				.partitioner(slaveStep().getName(), demoPartitioner)
 //				.partitionHandler(handler())
 				.repository(jobRepository).<PersonDto, Person>chunk(chunckSize).reader(reader).processor(processor)
-				.writer(writer).exceptionHandler(exceptionHandler())
+				.writer(writer)
+				.exceptionHandler(exceptionHandler())
 				.build();
 	}
 
@@ -230,8 +231,9 @@ public class FirstJobConfiguration {
 			@Override
 			public void handleException(RepeatContext context, Throwable throwable) throws Throwable {
 				System.out.println(throwable.getMessage());
+				FirstError.firstStepError=throwable.getMessage();
 				// 例外を投げず、終了する
-				context.setTerminateOnly();
+//				context.setTerminateOnly();
 			}
 		};
 
