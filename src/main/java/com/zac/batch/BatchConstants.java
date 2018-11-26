@@ -27,5 +27,6 @@ public final class BatchConstants {
   public static final String DECIDER_COMPLETED = "COMPLETED";
   public static final String DECIDER_CONTINUE = "CONTINUE";  
 
-  
+  public static final String MULTI_ITEM_WRITER_ID = "multiItemWriter";
+
 }
